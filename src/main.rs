@@ -1,4 +1,5 @@
 use std::env;
+use std::fs;
 
 fn main() {
     // The collect function turns an iterator into a collection of the annotated type
@@ -9,4 +10,9 @@ fn main() {
 
     println!("Searching for '{query}'");
     println!("In '{file_path}'");
+
+    let content = fs::read_to_string(file_path).expect("Could not read the file");
+
+    println!("With content:\n{content}");
+
 }
