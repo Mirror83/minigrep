@@ -1,4 +1,5 @@
 use std::{env, process};
+use std::error::Error;
 use std::fs;
 
 #[derive(Debug)]
@@ -34,20 +35,25 @@ fn main() {
         process::exit(1);
     });
 
-    run(config);
+    if let Err(e) = run(config) {
+        println!("Application error: {}", e);
+        process::exit(1);
+    }
 
 }
 
-fn run(config: Config) {
-    let content = fs::read_to_string(&config.file_path)
-        .unwrap_or_else(|err| {
-            println!("Problem opening the file: {}", err);
-            // A non-zero exit code signifies erroneous termination
-            process::exit(1);
-        });
+// This function will either return nothing (the unit type) or
+// a dynamic error and let the calling code (in this case, the main function)
+// decide on how to handle potential failure
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    // The ? operator makes the function return early in case of failure
+    // and returns the error type that caused the failure to the calling function
+    let content = fs::read_to_string(&config.file_path)?;
 
     println!("Searching for '{}'", config.query);
     println!("In '{}'", config.file_path);
 
     println!("With content:\n{}", content);
+
+    Ok(())
 }
