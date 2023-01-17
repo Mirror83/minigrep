@@ -10,7 +10,7 @@ struct Config {
 impl Config {
     // As programmers do not expect new to fail, we change the name of the
     // function from new to build
-    fn build(args: &[String]) -> Result<Config, &'static str> {
+    fn build(args: &[String]) -> Result<Config, &str> {
         if args.len() < 3 {
             return Err("Not enough arguments were provided")
         } else if args.len() > 3 {
@@ -34,6 +34,11 @@ fn main() {
         process::exit(1);
     });
 
+    run(config);
+
+}
+
+fn run(config: Config) {
     let content = fs::read_to_string(&config.file_path)
         .unwrap_or_else(|err| {
             println!("Problem opening the file: {}", err);
@@ -45,5 +50,4 @@ fn main() {
     println!("In '{}'", config.file_path);
 
     println!("With content:\n{}", content);
-
 }
