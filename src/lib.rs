@@ -33,9 +33,44 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let content = fs::read_to_string(&config.file_path)?;
 
     println!("Searching for '{}'", config.query);
-    println!("In '{}'", config.file_path);
+    println!("In '{}'\n", config.file_path);
 
-    println!("With content:\n{}", content);
+    let matching_strings = search(&content, &config.query);
+
+    if matching_strings.len() == 0 {
+        println!("No matching strings found.")
+    } else {
+        for line in matching_strings {
+            println!("{}", line);
+        }
+    }
 
     Ok(())
+}
+
+pub fn search<'a>(contents: &'a str, query: &str) -> Vec<&'a str>{
+    let mut matching_lines:Vec<&str> = Vec::new();
+
+    for line in contents.lines(){
+        if line.contains(query) {
+            matching_lines.push(line);
+        }
+    }
+
+    return matching_lines
+}
+
+#[cfg(test)]
+mod tests{
+    use super::*;
+
+    #[test]
+    fn test_search() {
+        let contents = "\
+Rust:
+safe, productive, efficient.
+Pick three";
+        assert_eq!(vec!["safe, productive, efficient."], search(&contents, "prod"));
+    }
+
 }
